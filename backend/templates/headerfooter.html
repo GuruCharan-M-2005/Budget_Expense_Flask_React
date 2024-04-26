@@ -1,0 +1,56 @@
+<head>
+    <style>
+
+        .Header-Page{
+            display: flex;
+            gap: 900px;
+            margin-left: 50px;
+        }
+        .Header-Navbar{
+            display: flex;
+            margin-top: 35px;
+            gap: 40px;
+        }
+        .Footer-Page{
+            display: flex;
+            gap: 900px;
+            margin-left: 50px;
+        }
+        .Footer-Navbar{
+            display: flex;
+            margin-top: 35px;
+            gap: 40px;
+        }
+
+    </style>
+</head>
+
+<div class="Main-Page">
+
+    <div class="Header-Page">
+        <div class="Header-Heading">
+            <h1>Expense Tracker</h1>
+        </div>
+        <div class="Header-Navbar">
+            <a class="Header-Link" href="#">Home</a>
+            <a class="Header-Link" href="#">About</a>
+            <a class="Header-Link" href="#">Contact</a>
+            <a class="Header-Link" href="#">Cart</a>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+   
+    <div class="Footer-Page"> 
+        <div class="Footer-Heading">
+            <h1>Follow us on</h1>
+        </div>
+        <div class="Footer-Navbar">
+            <a class="Footer-Link" href="#">Facebook</a>
+            <a class="Footer-Link" href="#">Instagram</a>
+            <a class="Footer-Link" href="#">LinkedIn</a>
+            <a class="Footer-Link" href="#">Telegram</a>
+        </div>
+    </div>
+
+</div>
