@@ -1,0 +1,33 @@
+body{
+    background-color: rgba(12, 12, 12, 0.833);
+    color: aliceblue;
+}
+
+/*  GRIDS   */
+.main-grid{
+    display: grid;
+    grid-template-columns: 70% 30%;
+    border: 1px solid white;
+}
+.sub-grid-1{
+    display: grid;
+    border: 1px solid white;
+}
+.sub-body-grid-1{
+    display: grid;
+    border: 1px solid white;
+}
+.sub-body-grid-2{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    border: 1px solid white;
+}
+.budget-info{
+    display: grid;
+    grid-template-columns: 33% 33% 34%;
+
+}
+.history-container{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+}
