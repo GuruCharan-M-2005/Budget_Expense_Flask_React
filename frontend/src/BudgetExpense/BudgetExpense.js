@@ -11,7 +11,7 @@ export default function BudgetExpense() {
     const [newBudgetname, setNewBudgetname] = useState('');
     const [newBudgetcost, setNewBudgetcost] = useState(0);
 
-    const [editBudgets, setEditBudgets] = useState(false);
+    const [editBudgets, setEditBudgets] = useState(null);
     const [editBudgetname, setEditBudgetname] = useState('');
     const [editBudgetcost, setEditBudgetcost] = useState(0);
 
@@ -20,11 +20,13 @@ export default function BudgetExpense() {
     const [newExpensename, setNewExpensename] = useState('');
     const [newExpensecost, setNewExpensecost] = useState(0);
 
-    const [editExpenses,setEditExpenses] = useState(false);
+    const [editExpenses,setEditExpenses] = useState(null);
     const [editExpensename, setEditExpensename] = useState('');
     const [editExpensecost, setEditExpensecost] = useState(0);
 
-    const [search, setSearch] = useState('');
+    const [searchIncome, setSearchIncome] = useState('');
+    const [searchExpense, setSearchExpense] = useState('');
+    const [searchHisotry, setSearchHisotry] = useState('');
     const [history,setHistory] = useState([]);
 
     const [current, setCurrent] = useState(0);
@@ -79,7 +81,8 @@ export default function BudgetExpense() {
         let temp={
             id: generateHexUUID(),
             name: newBudgetname,
-            amount: newBudgetcost
+            amount: newBudgetcost,
+            type:"income"
         }
         await axios.post(URL1, temp);
         addData3(temp);
@@ -94,21 +97,30 @@ export default function BudgetExpense() {
     }
 
     const addData2 = async () => {
-        let temp={
-            id: generateHexUUID(),
-            name: newExpensename,
-            amount: newExpensecost
+        if(newExpensecost<=current){
+            let temp={
+                id: generateHexUUID(),
+                name: newExpensename,
+                amount: newExpensecost,
+                type:"expense"
+            }
+            await axios.post(URL2,temp);
+            addData3(temp);
+            setTimeout(() => {
+                getData2();
+                getData4();
+            }, timeout);
+            console.log("Data create success");
+            setNewExpensecost(0);
+            setNewExpensename('');
+            setNewExpenses(!newExpenses)
         }
-        await axios.post(URL2,temp);
-        addData3(temp);
-        setTimeout(() => {
-            getData2();
-            getData4();
-        }, timeout);
-        console.log("Data create success");
-        setNewExpensecost(0);
-        setNewExpensename('');
-        setNewExpenses(!newExpenses)
+        else{
+            alert("Insufficient Balance in your Account");
+            setNewExpensecost(0);
+            setNewExpensename('');
+            setNewExpenses(!newExpenses)
+        }
     }
 
     const addData3 = async (data) => {
@@ -129,7 +141,7 @@ export default function BudgetExpense() {
             console.log("Data update success");
             setEditBudgetname('')
             setEditBudgetcost(0)
-            setEditBudgets(false);
+            setEditBudgets(null);
             getData1(); 
             getData4();
         } catch (err) {
@@ -147,7 +159,7 @@ export default function BudgetExpense() {
             console.log("Data update success");
             setEditExpensename('');
             setEditExpensecost(0);
-            setEditExpenses(false);
+            setEditExpenses(null);
             getData2(); 
             getData4();
         } catch (err) {
@@ -178,13 +190,13 @@ export default function BudgetExpense() {
     }
 
     const editBudgetZone = (item) => {
-        setEditBudgets(true);
+        setEditBudgets(item.id);
         setEditBudgetname(item.name)
         setEditBudgetcost(item.amount)
     }
 
     const editExpenseZone = (item) => {
-        setEditExpenses(true);
+        setEditExpenses(item.id);
         setEditExpensename(item.name)
         setEditExpensecost(item.amount)
     }
@@ -207,30 +219,28 @@ export default function BudgetExpense() {
   return (
     <div className='main-grid'>
         <div className='sub-grid-1'>
-            <h1>Budget Planner</h1>
+            <h1 className="textField" >Budget Planner</h1>
             <div className='sub-body-grid-1'>
                     <div className="budget-info">
-                        <h2>Current: {current}</h2>
-                        <h2>Expense: {expense}</h2>
-                        <h2>Income: {income}</h2>
-                    </div>
-                    <div>
-                        <input type='text' value={search} placeholder='Search...' onChange={(e)=>setSearch(e.target.value)} />
+                        <h2 className="textField" >Current: {current}</h2>
+                        <h2 className="textField" >Expense: {expense}</h2>
+                        <h2 className="textField" >Income: {income}</h2>
                     </div>
             </div>
             <div className='sub-body-grid-2'>
                 <div className='body-grid-1'>
-                        <h1>Income</h1>
+                        <h1 className="textField" >Income</h1>
+                        <input type='text' value={searchIncome} placeholder='Search...' onChange={(e)=>setSearchIncome(e.target.value)} className="SearchBar" />
                         <div className="expenses-container">
                         {budgets.filter((item) => (
-                            item.name.toLowerCase().includes(search.toLowerCase()) && item.name !== ''
+                            item.name.toLowerCase().includes(searchIncome.toLowerCase()) && item.name !== ''
                         )).map((item) => (
                             <div key={item.id} className="expense-item">
-                                {editBudgets ? (<div>
+                                {editBudgets && item.id===editBudgets ? (<div>
                                     <input type="text" value={editBudgetname} onChange={(e) => setEditBudgetname(e.target.value)} />
                                     <input type="text" value={editBudgetcost} onChange={(e) => setEditBudgetcost(e.target.value)} />
                                     <button onClick={() => editData1(item)}>Edit</button>
-                                    <button onClick={() => setEditBudgets(false)}>Cancel</button>
+                                    <button onClick={() => setEditBudgets(null)}>Cancel</button>
                                 </div>) : (
                                     <div>
                                         <h3>{item.name}</h3>
@@ -248,21 +258,23 @@ export default function BudgetExpense() {
                                 <input type='text' value={newBudgetname} onChange={(e)=>setNewBudgetname(e.target.value)} />
                                 <input type='text' value={newBudgetcost} onChange={(e)=>setNewBudgetcost(e.target.value)} />
                                 <button onClick={()=>addData1()}>Ok</button>
+                                <button onClick={()=>setNewBudgets(false)} >Cancel</button>
                             </div>}
                         </div>
                 </div>
                 <div className='body-grid-2'>
-                        <h1>Expense</h1>
+                        <h1 className="textField" >Expense</h1>
+                        <input type='text' value={searchExpense} placeholder='Search...' onChange={(e)=>setSearchExpense(e.target.value)} className="SearchBar"  />
                         <div className="expenses-container">
                         {expenses.filter((item) => (
-                            item.name.toLowerCase().includes(search.toLowerCase()) && item.name !== ''
+                            item.name.toLowerCase().includes(searchExpense.toLowerCase()) && item.name !== ''
                         )).map((item) => (
                             <div key={item.id} className="expense-item">
-                                {editExpenses ? (<div>
+                                {editExpenses && item.id===editExpenses ? (<div>
                                     <input type="text" value={editExpensename} onChange={(e) => setEditExpensename(e.target.value)} />
                                     <input type="text" value={editExpensecost} onChange={(e) => setEditExpensecost(e.target.value)} />
                                     <button onClick={() => editData2(item)}>Edit</button>
-                                    <button onClick={() => setEditExpenses(false)}>Cancel</button>
+                                    <button onClick={() => setEditExpenses(null)}>Cancel</button>
                                 </div>) : (
                                     <div>
                                         <h3>{item.name}</h3>
@@ -280,25 +292,25 @@ export default function BudgetExpense() {
                                 <input type='text' value={newExpensename} onChange={(e)=>setNewExpensename(e.target.value)} />
                                 <input type='text' value={newExpensecost} onChange={(e)=>setNewExpensecost(e.target.value)} />
                                 <button onClick={()=>addData2()}>Ok</button>
+                                <button onClick={()=>setNewExpenses(false)} >Cancel</button>
                             </div>}
                         </div>
                 </div>
             </div>
         </div>
         <div className='sub-grid-2'>
-            <h1>History</h1>
+            <h1 className="textField" >History</h1>
+            <input type='text' value={searchHisotry} placeholder='Search...' onChange={(e)=>setSearchHisotry(e.target.value)} className="SearchBar" />
                 <div className="history-container">
                         {history.filter((item) => (
-                            item.name.toLowerCase().includes(search.toLowerCase()) && item.name !== ''
+                            item.name.toLowerCase().includes(searchHisotry.toLowerCase()) && item.name !== ''
                         )).map((item) => (
-                            <div key={item.id} className="expense-item">
-                                {item.id !== "12345" && (
+                            <div key={item.id} className="expense-item" 
+                            style={{color:"black",border:item.type==="income"?"1    px soild green":"1px solid red", backgroundColor:item.type==="income"? "lightgreen": "lightpink"}}>
                                     <div>
                                         <h3>{item.name}</h3>
                                         <h3>{item.amount}</h3>
-                                        {/* <button onClick={() => deleteData(item.id)}>Delete</button> */}
                                     </div>
-                                )}
                             </div>
                         ))}
                     </div>

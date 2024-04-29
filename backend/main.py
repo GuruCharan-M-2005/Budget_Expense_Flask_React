@@ -19,14 +19,14 @@ def calculate():
     current, expense, income = 0, 0, 0
     items1 = list(collection1.find())
     items2 = list(collection2.find())
-    print(current,"$$$$",expense,"$$$$$$$$$$",income)
+    # print(current,"$$$$",expense,"$$$$$$$$$$",income)
     for i in items1:
         current += int(i['amount'])
         income += int(i['amount'])
     for i in items2:
         current -= int(i['amount'])
         expense += int(i['amount'])
-    print(current,"$$$$",expense,"$$$$$$$$$$",income)
+    # print(current,"$$$$",expense,"$$$$$$$$$$",income)
 
     collection4.update_one({'id': '1a2b3c'}, {'$set': {
         'current': current,
