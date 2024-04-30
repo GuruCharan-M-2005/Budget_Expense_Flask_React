@@ -249,37 +249,3 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
-
-
-'''
-^^^^^   WARNING   ^^^^^
-@app.route('/track_budget', methods=["GET", "PUT"]) 
-def track_item():
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['Budgets']  
-    collection = db['Budget']  
-    expenses = list(collection.find())
-    expense=0
-    for i in expenses:
-        if i['id']!="1234567890":
-            expense+=int(i['amount'])
-    a=collection.find_one({"id":"1234567890"})
-    a['expense']=expense
-    a['remaining']=a['budget']-expense
-    # print(a)
-    collection.update_one({"id":"1234567890"},{"$set":a})
-
-@app.route('/expense')
-def greet():
-    client = MongoClient('mongodb://localhost:27017/')
-    track_item()
-    db = client['Budgets']  
-    collection = db['Budget']  
-    expenses = list(collection.find())
-    data=collection.find_one({"id":"1234567890"})
-    return render_template('expense.html', expense=expenses,data=data,leng=len(expenses))  #return a rendered HTML
-'''
